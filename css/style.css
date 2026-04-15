@@ -1,0 +1,437 @@
+/* Formulario Pedidos Nave — Almafrut */
+
+:root {
+  --primary: #1a73e8;
+  --primary-hover: #1557b0;
+  --error: #d93025;
+  --success: #1e8e3e;
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --border: #dadce0;
+  --text: #202124;
+  --text-secondary: #5f6368;
+  --urgent: #ea4335;
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding: 16px;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Header */
+.form-header {
+  background: var(--primary);
+  color: white;
+  padding: 24px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin-bottom: 0;
+}
+
+.form-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-header p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Card sections */
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 12px;
+}
+
+.form-card:first-of-type {
+  border-radius: 0 0 var(--radius) var(--radius);
+  border-top: none;
+}
+
+/* Field groups */
+.field-group {
+  margin-bottom: 20px;
+}
+
+.field-group:last-child {
+  margin-bottom: 0;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+label .required {
+  color: var(--error);
+  margin-left: 2px;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: white;
+  color: var(--text);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+input.invalid,
+select.invalid,
+textarea.invalid {
+  border-color: var(--error);
+}
+
+.error-msg {
+  color: var(--error);
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+}
+
+.error-msg.visible {
+  display: block;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Searchable dropdown */
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-search {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: white;
+}
+
+.dropdown-search:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+.dropdown-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-list.open {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-item:hover,
+.dropdown-item.highlighted {
+  background: #e8f0fe;
+}
+
+.dropdown-item.separator {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 8px 12px 4px;
+  cursor: default;
+  background: #f1f3f4;
+}
+
+.dropdown-item.special {
+  color: var(--primary);
+  font-weight: 500;
+  border-top: 1px solid var(--border);
+}
+
+.dropdown-selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #e8f0fe;
+  border-radius: 4px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.dropdown-selected .clear-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.dropdown-selected .clear-btn:hover {
+  color: var(--error);
+}
+
+/* Radio groups */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.radio-option {
+  position: relative;
+}
+
+.radio-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-option label {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.radio-option input:checked + label {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.radio-option input:focus-visible + label {
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.4);
+}
+
+.radio-option.urgent-option input:checked + label {
+  background: var(--urgent);
+  border-color: var(--urgent);
+}
+
+/* Conditional fields */
+.conditional-field {
+  display: none;
+  margin-top: 12px;
+  padding-left: 12px;
+  border-left: 3px solid var(--primary);
+}
+
+.conditional-field.visible {
+  display: block;
+}
+
+/* Submit button */
+.submit-wrapper {
+  text-align: right;
+  padding-top: 8px;
+}
+
+.btn-submit {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 160px;
+}
+
+.btn-submit:hover {
+  background: var(--primary-hover);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-submit .spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Status messages */
+.status-banner {
+  display: none;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  font-size: 15px;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-banner.success {
+  display: flex;
+  background: #e6f4ea;
+  color: #137333;
+  border: 1px solid #ceead6;
+}
+
+.status-banner.error {
+  display: flex;
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f5c6cb;
+}
+
+.status-banner .status-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.status-banner .btn-new {
+  margin-left: auto;
+  background: var(--success);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.status-banner .btn-new:hover {
+  opacity: 0.9;
+}
+
+/* Footer */
+.form-footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+
+  .form-header {
+    padding: 18px 16px;
+  }
+
+  .form-header h1 {
+    font-size: 18px;
+  }
+
+  .form-card {
+    padding: 18px 16px;
+  }
+
+  .radio-group {
+    gap: 6px;
+  }
+
+  .radio-option label {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .submit-wrapper {
+    text-align: center;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .status-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .status-banner .btn-new {
+    margin-left: 0;
+    width: 100%;
+  }
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Pedidos — Nave Carton</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="form-header">
+    <h1>Registro de Pedidos</h1>
+    <p>Nave de Carton — Almafrut</p>
+  </div>
+
+  <!-- Status banner -->
+  <div id="status-banner" class="status-banner">
+    <span class="status-icon"></span>
+    <span class="status-text"></span>
+    <button type="button" class="btn-new" onclick="resetForm()">Nuevo pedido</button>
+  </div>
+
+  <form id="pedido-form" novalidate>
+
+    <!-- Card 1: Fecha + Cliente -->
+    <div class="form-card">
+
+      <div class="field-group">
+        <label for="fecha_pedido">Fecha del pedido <span class="required">*</span></label>
+        <input type="date" id="fecha_pedido" required>
+        <div class="field-hint">Cuando te ha llegado el pedido</div>
+        <div class="error-msg">Fecha es obligatoria</div>
+      </div>
+
+      <div class="field-group">
+        <label>Cliente <span class="required">*</span></label>
+        <input type="hidden" id="cliente" required>
+        <div id="cliente-dropdown" class="dropdown-wrapper">
+          <input type="text" class="dropdown-search" placeholder="Buscar cliente..." autocomplete="off">
+          <div class="dropdown-list"></div>
+          <div class="dropdown-selected" style="display:none"></div>
+        </div>
+        <div class="error-msg">Selecciona un cliente</div>
+
+        <div id="cliente-otro-wrapper" class="conditional-field">
+          <label for="cliente_otro">Nombre del cliente</label>
+          <input type="text" id="cliente_otro" placeholder="Escribe el nombre del cliente">
+          <div class="error-msg">Escribe el nombre del cliente</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Card 2: Medida + Cantidad -->
+    <div class="form-card">
+
+      <div class="field-group">
+        <label>Medida de la caja (LxAxH) <span class="required">*</span></label>
+        <input type="hidden" id="medida" required>
+        <div id="medida-dropdown" class="dropdown-wrapper">
+          <input type="text" class="dropdown-search" placeholder="Buscar medida..." autocomplete="off">
+          <div class="dropdown-list"></div>
+          <div class="dropdown-selected" style="display:none"></div>
+        </div>
+        <div class="field-hint">Formato: LargoxAnchoxAlto en cm</div>
+        <div class="error-msg">Selecciona una medida</div>
+
+        <div id="medida-otra-wrapper" class="conditional-field">
+          <label for="medida_otra">Medida personalizada</label>
+          <input type="text" id="medida_otra" placeholder="Ej: 55x35x18">
+          <div class="error-msg">Escribe la medida</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="cantidad">Cantidad (unidades) <span class="required">*</span></label>
+        <input type="number" id="cantidad" min="1" required placeholder="Ej: 500">
+        <div class="error-msg">La cantidad debe ser mayor que 0</div>
+      </div>
+
+    </div>
+
+    <!-- Card 3: Entrega + Urgencia -->
+    <div class="form-card">
+
+      <div class="field-group">
+        <label for="fecha_entrega">Fecha de entrega <span class="required">*</span></label>
+        <input type="date" id="fecha_entrega" required>
+        <div class="field-hint">Para cuando las necesita el cliente</div>
+        <div class="error-msg">Fecha de entrega es obligatoria</div>
+      </div>
+
+      <div class="field-group">
+        <label>Urgencia <span class="required">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" name="urgencia" id="urgencia-normal" value="Normal" checked>
+            <label for="urgencia-normal">Normal</label>
+          </div>
+          <div class="radio-option urgent-option">
+            <input type="radio" name="urgencia" id="urgencia-urgente" value="Urgente">
+            <label for="urgencia-urgente">Urgente</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Card 4: Canal + Observaciones -->
+    <div class="form-card">
+
+      <div class="field-group">
+        <label>Canal por el que llego <span class="required">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" name="canal" id="canal-telefono" value="Telefono">
+            <label for="canal-telefono">Telefono</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" name="canal" id="canal-whatsapp" value="WhatsApp">
+            <label for="canal-whatsapp">WhatsApp</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" name="canal" id="canal-email" value="Email">
+            <label for="canal-email">Email</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" name="canal" id="canal-persona" value="En persona">
+            <label for="canal-persona">En persona</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" name="canal" id="canal-comercial" value="Comercial">
+            <label for="canal-comercial">Comercial</label>
+          </div>
+        </div>
+        <div class="error-msg">Selecciona el canal</div>
+      </div>
+
+      <div class="field-group">
+        <label for="observaciones">Observaciones</label>
+        <textarea id="observaciones" placeholder="Cualquier detalle extra: tipo de impresion, paletizado especial, incidencia con el cliente..."></textarea>
+      </div>
+
+    </div>
+
+    <!-- Submit -->
+    <div class="form-card">
+      <div class="submit-wrapper">
+        <button type="submit" id="btn-submit" class="btn-submit">Registrar pedido</button>
+      </div>
+    </div>
+
+  </form>
+
+  <div class="form-footer">
+    Almafrut &mdash; Nave de Carton
+  </div>
+
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
