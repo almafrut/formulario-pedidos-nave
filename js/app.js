@@ -3,7 +3,7 @@
 // ============================================================
 
 // URL del trigger de Power Automate — pegar aqui tras crear el flujo
-const POWER_AUTOMATE_URL = "";
+const POWER_AUTOMATE_URL = "https://default4219abae8d5243a1b52a7bb8c1c61d.0d.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/05580e31334d42b0987f1ee3c02ec5bb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qO4W0fkhDqsgrxzMX7-sPkqlBjb0kYdufiLg_2H9f1U";
 
 // ============================================================
 // Searchable dropdown component
