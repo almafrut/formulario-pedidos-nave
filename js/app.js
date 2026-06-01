@@ -6,6 +6,21 @@
 const POWER_AUTOMATE_URL = "https://default4219abae8d5243a1b52a7bb8c1c61d.0d.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/05580e31334d42b0987f1ee3c02ec5bb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=qO4W0fkhDqsgrxzMX7-sPkqlBjb0kYdufiLg_2H9f1U";
 
 // ============================================================
+// Referencias del pedido (hasta 5 medidas + cantidades)
+// La referencia 1 conserva los ids originales (medida / medida_otra / cantidad)
+// para mantener compatibilidad con el flujo de Power Automate actual.
+// ============================================================
+const REFS = [
+  { n: 1, wrapperId: "medida-dropdown",   hiddenId: "medida",   otraWrapId: "medida-otra-wrapper",   otraId: "medida_otra",   cantidadId: "cantidad" },
+  { n: 2, wrapperId: "medida-dropdown-2", hiddenId: "medida_2", otraWrapId: "medida-otra-wrapper-2", otraId: "medida_otra_2", cantidadId: "cantidad_2" },
+  { n: 3, wrapperId: "medida-dropdown-3", hiddenId: "medida_3", otraWrapId: "medida-otra-wrapper-3", otraId: "medida_otra_3", cantidadId: "cantidad_3" },
+  { n: 4, wrapperId: "medida-dropdown-4", hiddenId: "medida_4", otraWrapId: "medida-otra-wrapper-4", otraId: "medida_otra_4", cantidadId: "cantidad_4" },
+  { n: 5, wrapperId: "medida-dropdown-5", hiddenId: "medida_5", otraWrapId: "medida-otra-wrapper-5", otraId: "medida_otra_5", cantidadId: "cantidad_5" },
+];
+const MAX_REFS = 5;
+let visibleRefs = 1;
+
+// ============================================================
 // Searchable dropdown component
 // ============================================================
 function initSearchableDropdown(config) {
@@ -174,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("fecha_pedido").value = today;
 
-  // Init searchable dropdowns
+  // Dropdown de cliente
   initSearchableDropdown({
     wrapperId: "cliente-dropdown",
     hiddenId: "cliente",
@@ -185,34 +200,102 @@ document.addEventListener("DOMContentLoaded", () => {
     otherValue: "__OTHER__",
   });
 
-  initSearchableDropdown({
-    wrapperId: "medida-dropdown",
-    hiddenId: "medida",
-    conditionalId: "medida-otra-wrapper",
-    data: DIMENSIONES,
-    grouped: true,
-    otherLabel: "OTRA MEDIDA (escribir)",
-    otherValue: "__OTHER__",
+  // Dropdown de medida para cada referencia (1..5)
+  REFS.forEach((ref) => {
+    initSearchableDropdown({
+      wrapperId: ref.wrapperId,
+      hiddenId: ref.hiddenId,
+      conditionalId: ref.otraWrapId,
+      data: DIMENSIONES,
+      grouped: true,
+      otherLabel: "OTRA MEDIDA (escribir)",
+      otherValue: "__OTHER__",
+    });
   });
+
+  // Botones de añadir / quitar referencia
+  document.getElementById("btn-add-ref").addEventListener("click", addReference);
+  document.querySelectorAll(".ref-remove").forEach((btn) => {
+    btn.addEventListener("click", () => removeReference(Number(btn.dataset.ref)));
+  });
+  updateRefControls();
 
   // Form submission
   document.getElementById("pedido-form").addEventListener("submit", handleSubmit);
 });
 
 // ============================================================
+// Mostrar/ocultar referencias dinamicas
+// ============================================================
+function updateRefControls() {
+  REFS.forEach((ref) => {
+    const block = document.getElementById("ref-" + ref.n);
+    const visible = ref.n <= visibleRefs;
+    block.classList.toggle("ref-hidden", !visible);
+    const rm = block.querySelector(".ref-remove");
+    if (rm) {
+      rm.style.display =
+        visible && ref.n === visibleRefs && visibleRefs > 1 ? "" : "none";
+    }
+  });
+  document.getElementById("btn-add-ref").style.display =
+    visibleRefs < MAX_REFS ? "" : "none";
+}
+
+function addReference() {
+  if (visibleRefs >= MAX_REFS) return;
+  visibleRefs++;
+  updateRefControls();
+  const block = document.getElementById("ref-" + visibleRefs);
+  block.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  const search = block.querySelector(".dropdown-search");
+  if (search) search.focus();
+}
+
+function removeReference(n) {
+  // Solo se quita la ultima referencia visible (evita huecos)
+  if (n !== visibleRefs || visibleRefs <= 1) return;
+  clearReference(REFS[n - 1]);
+  visibleRefs--;
+  updateRefControls();
+}
+
+function clearReference(ref) {
+  const hidden = document.getElementById(ref.hiddenId);
+  if (hidden) hidden.value = "";
+  const wrapper = document.getElementById(ref.wrapperId);
+  if (wrapper && wrapper._clear) wrapper._clear();
+  const otra = document.getElementById(ref.otraId);
+  if (otra) {
+    otra.value = "";
+    otra.classList.remove("invalid");
+  }
+  const otraWrap = document.getElementById(ref.otraWrapId);
+  if (otraWrap) otraWrap.classList.remove("visible");
+  const cant = document.getElementById(ref.cantidadId);
+  if (cant) {
+    cant.value = "";
+    cant.classList.remove("invalid");
+  }
+  const block = document.getElementById("ref-" + ref.n);
+  if (block) {
+    block
+      .querySelectorAll(".error-msg")
+      .forEach((e) => e.classList.remove("visible"));
+  }
+}
+
+// ============================================================
 // Validation
 // ============================================================
 function validateForm() {
   let valid = true;
-  const errors = [];
 
-  // Required fields
+  // Campos simples obligatorios
   const requiredFields = [
     { id: "fecha_pedido", name: "Fecha del pedido" },
     { id: "cliente", name: "Cliente" },
-    { id: "cantidad", name: "Cantidad" },
     { id: "fecha_entrega", name: "Fecha de entrega" },
-    { id: "medida", name: "Medida" },
   ];
 
   requiredFields.forEach(({ id, name }) => {
@@ -233,31 +316,7 @@ function validateForm() {
     }
   });
 
-  // Cantidad > 0
-  const cantidad = document.getElementById("cantidad");
-  if (cantidad.value && Number(cantidad.value) <= 0) {
-    cantidad.classList.add("invalid");
-    const errorEl = cantidad.parentElement.querySelector(".error-msg");
-    if (errorEl) {
-      errorEl.textContent = "La cantidad debe ser mayor que 0";
-      errorEl.classList.add("visible");
-    }
-    valid = false;
-  }
-
-  // Urgencia
-  const urgencia = document.querySelector('input[name="urgencia"]:checked');
-  if (!urgencia) {
-    valid = false;
-  }
-
-  // Canal
-  const canal = document.querySelector('input[name="canal"]:checked');
-  if (!canal) {
-    valid = false;
-  }
-
-  // Conditional: client "other" must have text
+  // Cliente "otro" debe tener texto
   const clienteVal = document.getElementById("cliente").value;
   if (clienteVal === "__OTHER__") {
     const otroInput = document.getElementById("cliente_otro");
@@ -269,19 +328,66 @@ function validateForm() {
     }
   }
 
-  // Conditional: dimension "other" must have text
-  const medidaVal = document.getElementById("medida").value;
-  if (medidaVal === "__OTHER__") {
-    const otraInput = document.getElementById("medida_otra");
-    if (!otraInput.value.trim()) {
-      otraInput.classList.add("invalid");
-      valid = false;
-    } else {
-      otraInput.classList.remove("invalid");
+  // Cada referencia visible: medida + cantidad obligatorias
+  for (let i = 1; i <= visibleRefs; i++) {
+    if (!validateReference(REFS[i - 1])) valid = false;
+  }
+
+  // Urgencia
+  if (!document.querySelector('input[name="urgencia"]:checked')) valid = false;
+
+  // Canal
+  if (!document.querySelector('input[name="canal"]:checked')) valid = false;
+
+  return valid;
+}
+
+function validateReference(ref) {
+  let ok = true;
+
+  // Medida obligatoria
+  const medEl = document.getElementById(ref.hiddenId);
+  const wrapper = document.getElementById(ref.wrapperId);
+  const search = wrapper ? wrapper.querySelector(".dropdown-search") : null;
+  const fieldGroup = wrapper ? wrapper.closest(".field-group") : null;
+  const medError = fieldGroup ? fieldGroup.querySelector(".error-msg") : null;
+
+  if (!medEl.value) {
+    if (search) search.classList.add("invalid");
+    if (medError) {
+      medError.textContent = "Selecciona una medida";
+      medError.classList.add("visible");
+    }
+    ok = false;
+  } else {
+    if (search) search.classList.remove("invalid");
+    if (medError) medError.classList.remove("visible");
+
+    // Medida "otra" debe tener texto
+    if (medEl.value === "__OTHER__") {
+      const otra = document.getElementById(ref.otraId);
+      if (!otra.value.trim()) {
+        otra.classList.add("invalid");
+        ok = false;
+      } else {
+        otra.classList.remove("invalid");
+      }
     }
   }
 
-  return valid;
+  // Cantidad obligatoria > 0
+  const cant = document.getElementById(ref.cantidadId);
+  const cantError = cant.closest(".field-group").querySelector(".error-msg");
+  if (!cant.value || Number(cant.value) <= 0) {
+    cant.classList.add("invalid");
+    if (cantError) cantError.classList.add("visible");
+    ok = false;
+  } else {
+    cant.classList.remove("invalid");
+    if (cantError) cantError.classList.remove("visible");
+  }
+
+  return ok;
 }
 
 // ============================================================
@@ -308,34 +414,52 @@ async function handleSubmit(e) {
     return;
   }
 
-  // Build payload
+  // Datos base del pedido
   const clienteVal = document.getElementById("cliente").value;
-  const medidaVal = document.getElementById("medida").value;
+  const clienteFinal =
+    clienteVal === "__OTHER__"
+      ? document.getElementById("cliente_otro").value.trim()
+      : clienteVal;
 
   const payload = {
     fecha_pedido: document.getElementById("fecha_pedido").value,
-    cliente:
-      clienteVal === "__OTHER__"
-        ? document.getElementById("cliente_otro").value.trim()
-        : clienteVal,
-    cliente_otro:
-      clienteVal === "__OTHER__"
-        ? document.getElementById("cliente_otro").value.trim()
-        : "",
-    medida:
-      medidaVal === "__OTHER__"
-        ? document.getElementById("medida_otra").value.trim()
-        : medidaVal,
-    medida_otra:
-      medidaVal === "__OTHER__"
-        ? document.getElementById("medida_otra").value.trim()
-        : "",
-    cantidad: Number(document.getElementById("cantidad").value),
+    cliente: clienteFinal,
+    cliente_otro: clienteVal === "__OTHER__" ? clienteFinal : "",
     fecha_entrega: document.getElementById("fecha_entrega").value,
     urgencia: document.querySelector('input[name="urgencia"]:checked').value,
     canal: document.querySelector('input[name="canal"]:checked').value,
     observaciones: document.getElementById("observaciones").value.trim(),
   };
+
+  // Referencias: campos planos (ref 1 sin sufijo; ref 2..5 con _N) + array.
+  // Las referencias no usadas se envian vacias para que las columnas del Excel queden en blanco.
+  const referencias = [];
+  REFS.forEach((ref) => {
+    const medEl = document.getElementById(ref.hiddenId);
+    const otraEl = document.getElementById(ref.otraId);
+    const cantEl = document.getElementById(ref.cantidadId);
+    const activa = ref.n <= visibleRefs && !!medEl.value;
+
+    const medidaFinal = !activa
+      ? ""
+      : medEl.value === "__OTHER__"
+      ? otraEl.value.trim()
+      : medEl.value;
+    const medidaOtra =
+      activa && medEl.value === "__OTHER__" ? otraEl.value.trim() : "";
+    const cantidadVal = activa && cantEl.value ? Number(cantEl.value) : "";
+
+    const suf = ref.n === 1 ? "" : "_" + ref.n;
+    payload["medida" + suf] = medidaFinal;
+    payload["medida_otra" + suf] = medidaOtra;
+    payload["cantidad" + suf] = cantidadVal;
+
+    if (activa) {
+      referencias.push({ medida: medidaFinal, cantidad: cantidadVal });
+    }
+  });
+  payload.num_referencias = referencias.length;
+  payload.referencias = referencias;
 
   // Send
   btn.disabled = true;
@@ -379,9 +503,11 @@ function resetForm() {
     .toISOString()
     .split("T")[0];
 
-  // Clear dropdowns
+  // Limpia dropdowns: cliente + todas las referencias
   document.getElementById("cliente-dropdown")._clear();
-  document.getElementById("medida-dropdown")._clear();
+  REFS.forEach((ref) => clearReference(ref));
+  visibleRefs = 1;
+  updateRefControls();
 
   // Hide conditional fields
   document.querySelectorAll(".conditional-field").forEach((el) => {

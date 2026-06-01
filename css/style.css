@@ -291,6 +291,74 @@ textarea {
   display: block;
 }
 
+/* Card title + referencias dinamicas */
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.ref-block {
+  margin-bottom: 4px;
+}
+
+.ref-block.ref-hidden {
+  display: none;
+}
+
+.ref-extra {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  margin-top: 12px;
+}
+
+.ref-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ref-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.ref-remove {
+  background: none;
+  border: none;
+  color: var(--error);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+}
+
+.ref-remove:hover {
+  text-decoration: underline;
+}
+
+.btn-add-ref {
+  display: block;
+  width: 100%;
+  background: #e8f0fe;
+  color: var(--primary);
+  border: 1px dashed var(--primary);
+  border-radius: var(--radius);
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.btn-add-ref:hover {
+  background: #d2e3fc;
+}
+
 /* Submit button */
 .submit-wrapper {
   text-align: right;
