@@ -89,7 +89,9 @@ const CLIENTES = [
   "HORTOFRUTICOLAS LAS NORIAS",
   "GREEN VALLEY",
   "CAMPOJOYMA",
-  "CAPARROS NATURE"
+  "CAPARROS NATURE",
+  "EXPLOTACIONES AGRICOLAS SEGURA PEREZ",
+  "AGRO ONEGAR"
 ];
 
 const DIMENSIONES = [
@@ -113,5 +115,8 @@ const DIMENSIONES = [
   ]},
   { familia: "30x20", medidas: [
     "30x20x10,5", "30x20x11,5"
+  ]},
+  { familia: "33x30", medidas: [
+    "33x30x27"
   ]}
 ];
