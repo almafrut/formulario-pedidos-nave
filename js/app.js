@@ -424,7 +424,8 @@ async function handleSubmit(e) {
   const payload = {
     fecha_pedido: document.getElementById("fecha_pedido").value,
     cliente: clienteFinal,
-    cliente_otro: clienteVal === "__OTHER__" ? clienteFinal : "",
+    // cliente ya lleva el valor final; cliente_otro va vacio para que el flujo no lo repita
+    cliente_otro: "",
     fecha_entrega: document.getElementById("fecha_entrega").value,
     urgencia: document.querySelector('input[name="urgencia"]:checked').value,
     canal: document.querySelector('input[name="canal"]:checked').value,
@@ -445,8 +446,8 @@ async function handleSubmit(e) {
       : medEl.value === "__OTHER__"
       ? otraEl.value.trim()
       : medEl.value;
-    const medidaOtra =
-      activa && medEl.value === "__OTHER__" ? otraEl.value.trim() : "";
+    // medida ya lleva el valor final; medida_otra va vacio para que el flujo no lo repita
+    const medidaOtra = "";
     const cantidadVal = activa && cantEl.value ? Number(cantEl.value) : "";
 
     const suf = ref.n === 1 ? "" : "_" + ref.n;
